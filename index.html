@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cylinder Validation Form</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #e1f5fe);
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .card {
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      padding: 30px;
+      width: 100%;
+      max-width: 700px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 12px 15px;
+    }
+    th {
+      background-color: #1976d2;
+      color: white;
+      text-align: center;
+    }
+    .output-header {
+      background-color: #d32f2f;
+      color: white;
+      text-align: center;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .result-cell {
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+    .valid {
+      color: green;
+    }
+    .invalid {
+      color: red;
+    }
+    .calculate-btn {
+      background-color: #0288d1;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.3s;
+      display: block;
+      margin: 20px auto 0;
+    }
+    .calculate-btn:hover {
+      background-color: #0277bd;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <form id="cylinderForm">
+      <table>
+        <tr><th colspan="2">INPUT DATA</th></tr>
+        <tr><td>PRESSURE IN BAR=</td><td><input type="number" id="pressure" value="4" step="0.01" required></td></tr>
+        <tr><td>CYLINDER BORE DIA IN MM=</td><td><input type="number" id="boreDia" value="80" step="0.01" required></td></tr>
+        <tr><td>WEIGHT ON CLAMP IN KG "F2" =</td><td><input type="number" id="weight" value="20" step="0.01" required></td></tr>
+        <tr><td>LENGTH "L2" IN MM=</td><td><input type="number" id="L2" value="451" step="0.01" required></td></tr>
+        <tr><td>LENGTH "L1" IN MM=</td><td><input type="number" id="L1" value="75" step="0.01" required></td></tr>
+
+        <tr><th colspan="2" class="output-header">OUTPUT DATA</th></tr>
+        <tr><td>REQUIRED CYLINDER FORCE "F1" IN N=</td><td id="force">-</td></tr>
+        <tr><td>REQUIRED CYLINDER BORE DIA "D" IN MM=</td><td id="requiredBore">-</td></tr>
+
+        <tr><td class="result-cell">RESULT=</td><td class="result-cell" id="result">-</td></tr>
+      </table>
+      <button type="button" class="calculate-btn" onclick="calculateResult()">Calculate</button>
+    </form>
+  </div>
+
+  <script>
+    function calculateResult() {
+      const pressure = parseFloat(document.getElementById('pressure').value);
+      const boreDia = parseFloat(document.getElementById('boreDia').value);
+      const weight = parseFloat(document.getElementById('weight').value);
+      const L2 = parseFloat(document.getElementById('L2').value);
+      const L1 = parseFloat(document.getElementById('L1').value);
+
+      if (isNaN(pressure) || isNaN(boreDia) || isNaN(weight) || isNaN(L2) || isNaN(L1) || L1 === 0 || pressure === 0) {
+        alert("Please fill all fields with valid non-zero numbers.");
+        return;
+      }
+
+      const g = 9.81;
+      const F2 = weight * g;
+      const F1 = F2 * (L2 / L1);
+      const D = Math.sqrt((4 * F1) / (Math.PI * (pressure * 1e5)) * 1e6); // mm
+
+      document.getElementById('force').innerText = F1.toFixed(2);
+      document.getElementById('requiredBore').innerText = D.toFixed(2);
+
+      const resultText = boreDia >= D ? 'CYLINDER IS VALID' : 'CYLINDER IS NOT VALID';
+      const resultCell = document.getElementById('result');
+      resultCell.innerText = resultText;
+      resultCell.className = 'result-cell ' + (boreDia >= D ? 'valid' : 'invalid');
+    }
+  </script>
+</body>
+</html>
